@@ -34,6 +34,13 @@ namespace RealmCharFameTracker
 			LoadSaveItems();
 		}
 
+		public void ReloadSaveItems()
+		{
+			saveItems.Clear();
+
+			LoadSaveItems();
+		}
+
 		void LoadSaveItems()
 		{
 			if( !File.Exists( GetSaveName() ) ) return;
@@ -90,6 +97,41 @@ namespace RealmCharFameTracker
 		string GetSaveName()
 		{
 			return( saveFolder + GetName() + ".txt" );
+		}
+
+		public bool HasStats()
+		{
+			return( saveItems.Count > 0 );
+		}
+
+		public float CalcAvgTime()
+		{
+			float total = 0.0f;
+			foreach( var item in saveItems )
+			{
+				total += item.duration;
+			}
+			return( total / saveItems.Count );
+		}
+
+		public float CalcAvgFame()
+		{
+			float total = 0.0f;
+			foreach( var item in saveItems )
+			{
+				total += item.fameEarned;
+			}
+			return ( total / saveItems.Count );
+		}
+
+		public float CalcAvgFpm()
+		{
+			float total = 0.0f;
+			foreach( var item in saveItems )
+			{
+				total += item.fameEarned / item.duration;
+			}
+			return ( total / saveItems.Count );
 		}
 
 		List<SaveItem> saveItems = new List<SaveItem>();

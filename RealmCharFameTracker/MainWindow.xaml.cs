@@ -32,6 +32,10 @@ namespace RealmCharFameTracker
 
 			UpdateStartEnabled();
 			UpdateFinishEnabled();
+
+			UpdateDungeonStatsSearchItems();
+
+			UpdateBestFPMList();
 		}
 
 		private void DungeonSearch_TextChanged( object sender,TextChangedEventArgs e )
@@ -123,6 +127,7 @@ namespace RealmCharFameTracker
 		private void CancelButton_Click( object sender,RoutedEventArgs e )
 		{
 			started = false;
+			RunningText.Text = "";
 			UpdateStartEnabled();
 		}
 
@@ -136,11 +141,26 @@ namespace RealmCharFameTracker
 			UpdateStartEnabled();
 		}
 
+		private void StartingFame_KeyDown( object sender,KeyEventArgs e )
+		{
+			if( e.Key == Key.Return )
+			{
+				Start();
+			}
+		}
+
 		private void StartButton_Click( object sender,RoutedEventArgs e )
+		{
+			Start();
+		}
+
+		void Start()
 		{
 			startTime = DateTime.Now;
 			started = true;
 			StartButton.IsEnabled = false;
+
+			RunningText.Text = "running";
 		}
 
 		private void EndFame_TextChanged( object sender,TextChangedEventArgs e )
@@ -163,14 +183,130 @@ namespace RealmCharFameTracker
 				}
 			}
 			var maxAmount = int.Parse( MaxAmount.Text );
-			dungeons[DungeonList.SelectedIndex].AddSaveItem( totalTime,totalFame,charUsed,maxAmount );
+
+			int dungeonUsed = -1;
+			var selectedDungeonName = ( DungeonList.SelectedItem as ComboBoxItem ).Content.ToString();
+			for( int i = 0; i < dungeons.Length; ++i )
+			{
+				if( dungeons[i].GetName() == selectedDungeonName )
+				{
+					dungeonUsed = i;
+					break;
+				}
+			}
+
+			var selectedDungeon = dungeons[dungeonUsed];
+			selectedDungeon.AddSaveItem( totalTime,totalFame,charUsed,maxAmount );
 
 			DungeonSearch.Text = "";
 			DungeonList.SelectedIndex = -1;
 			StartingFame.Text = "";
 			EndFame.Text = "";
 			started = false;
+			RunningText.Text = "";
 			UpdateStartEnabled();
+
+			UpdateDungeonStatsCombo();
+			UpdateBestFPMList();
+		}
+
+		private void StatsSearch_TextChanged( object sender,TextChangedEventArgs e )
+		{
+			UpdateDungeonStatsSearchItems();
+		}
+
+		private void StatsSearch_KeyDown( object sender,KeyEventArgs e )
+		{
+			if( e.Key == Key.Return )
+			{
+				// select 1st item in list
+				UpdateDungeonStatsSearchItems();
+				if( DungeonStatsCombo.Items.Count > 0 ) DungeonStatsCombo.SelectedIndex = 0;
+			}
+		}
+
+		void UpdateDungeonStatsSearchItems()
+		{
+			DungeonStatsCombo.Items.Clear();
+
+			foreach( var dungeon in dungeons )
+			{
+				if( dungeon.NameMatch( StatsSearch.Text ) )
+				{
+					var comboBoxItem = new ComboBoxItem();
+					comboBoxItem.Content = dungeon.GetName();
+
+					DungeonStatsCombo.Items.Add( comboBoxItem );
+				}
+			}
+		}
+
+		private void DungeonStatsCombo_SelectionChanged( object sender,SelectionChangedEventArgs e )
+		{
+			UpdateDungeonStatsCombo();
+		}
+
+		void UpdateDungeonStatsCombo()
+		{
+			DungeonStatsList.Items.Clear();
+
+			if( DungeonStatsCombo.SelectedItem == null ) return;
+
+			int dungeonUsed = -1;
+			var selectedDungeonName = ( DungeonStatsCombo.SelectedItem as ComboBoxItem ).Content.ToString();
+			for( int i = 0; i < dungeons.Length; ++i )
+			{
+				if( dungeons[i].GetName() == selectedDungeonName )
+				{
+					dungeonUsed = i;
+					break;
+				}
+			}
+
+			var selectedDungeon = dungeons[dungeonUsed];
+			selectedDungeon.ReloadSaveItems();
+
+			if( selectedDungeon.HasStats() )
+			{
+				AddStat( "Avg Time: " + selectedDungeon.CalcAvgTime().ToString( "0.00" ) + 'm' );
+				AddStat( "Avg Fame: " + selectedDungeon.CalcAvgFame().ToString( "0.00" ) );
+				AddStat( "Avg f/m: " + selectedDungeon.CalcAvgFpm().ToString( "0.00" ) );
+			}
+			else AddStat( "No data" );
+		}
+
+		void AddStat( string name )
+		{
+			var newItem = new ListBoxItem();
+			newItem.Content = name;
+			DungeonStatsList.Items.Add( newItem );
+		}
+
+		void UpdateBestFPMList()
+		{
+			var sortedDungeons = new List<Dungeon>();
+			foreach( var dungeon in dungeons ) sortedDungeons.Add( dungeon );
+
+			sortedDungeons.Sort( delegate( Dungeon a,Dungeon b )
+			{
+				return( a.CalcAvgFpm().CompareTo( b.CalcAvgFpm() ) );
+			} );
+
+
+			BestFPMList.Items.Clear();
+
+			foreach( var dungeon in sortedDungeons )
+			{
+				if( dungeon.HasStats() )
+				{
+					var comboBoxItem = new ComboBoxItem();
+					comboBoxItem.Content = dungeon.GetName() + ": " + dungeon.CalcAvgFpm().ToString( "0.00" ) +
+						"(" + dungeon.CalcAvgFame().ToString( "0.00" ) + " / " +
+						dungeon.CalcAvgTime().ToString( "0.00" ) + ")";
+
+					BestFPMList.Items.Add( comboBoxItem );
+				}
+			}
 		}
 
 		Regex intRegex = new Regex( "[^0-9]+" );

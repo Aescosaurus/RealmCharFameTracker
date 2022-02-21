@@ -16,7 +16,6 @@
 
 		<Grid Margin="50">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="2*"></RowDefinition>
 				<RowDefinition Height="*"></RowDefinition>
 				<RowDefinition Height="*"></RowDefinition>
 			</Grid.RowDefinitions>
@@ -43,13 +42,14 @@
 					<ListBoxItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Starting Fame "></TextBlock>
-							<TextBox x:Name="StartingFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="CheckStartTextChanged"></TextBox>
+							<TextBox x:Name="StartingFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="CheckStartTextChanged" KeyDown="StartingFame_KeyDown"></TextBox>
 						</StackPanel>
 					</ListBoxItem>
 					<ListBoxItem>
 						<StackPanel Orientation="Horizontal">
 							<Button x:Name="StartButton" Content="Start" Margin="0,0,5,0" Click="StartButton_Click"></Button>
-							<Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click"></Button>
+							<Button x:Name="CancelButton" Content="Cancel" Margin="0,0,5,0" Click="CancelButton_Click"></Button>
+							<TextBlock x:Name="RunningText" Text=""></TextBlock>
 						</StackPanel>
 					</ListBoxItem>
 					<ListBoxItem>
@@ -86,6 +86,35 @@
 						</StackPanel>
 					</ListBoxItem>
 				</ListBox>
+			</Grid>
+
+			<Grid Grid.Row="0" Grid.Column="2" Background="white">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="3*"></RowDefinition>
+					<RowDefinition Height="6*"></RowDefinition>
+				</Grid.RowDefinitions>
+				<StackPanel Grid.Row="0">
+					<TextBlock Text="Dungeon Stats" HorizontalAlignment="Center"></TextBlock>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="Search "></TextBlock>
+						<TextBox x:Name="StatsSearch" Width="100" TextChanged="StatsSearch_TextChanged" KeyDown="StatsSearch_KeyDown"></TextBox>
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="Dungeon "></TextBlock>
+						<ComboBox x:Name="DungeonStatsCombo" SelectionChanged="DungeonStatsCombo_SelectionChanged"></ComboBox>
+					</StackPanel>
+				</StackPanel>
+				<ListBox Grid.Row="1" x:Name="DungeonStatsList">
+				</ListBox>
+			</Grid>
+
+			<Grid Grid.Row="1" Grid.Column="0" Background="white">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="1*"></RowDefinition>
+					<RowDefinition Height="7*"></RowDefinition>
+				</Grid.RowDefinitions>
+				<TextBlock Text="Best f/m" HorizontalAlignment="Center"></TextBlock>
+				<ListBox x:Name="BestFPMList" Grid.Row="1"></ListBox>
 			</Grid>
 		</Grid>
 	</Grid>
