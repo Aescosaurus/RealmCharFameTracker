@@ -315,7 +315,7 @@ namespace RealmCharFameTracker
 
 			sortedDungeons.Sort( delegate( Dungeon a,Dungeon b )
 			{
-				return( a.CalcAvgFpm().CompareTo( b.CalcAvgFpm() ) );
+				return( b.CalcAvgFpm().CompareTo( a.CalcAvgFpm() ) );
 			} );
 
 
