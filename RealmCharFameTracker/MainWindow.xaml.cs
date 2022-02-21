@@ -87,6 +87,8 @@ namespace RealmCharFameTracker
 				// select 1st item in list
 				UpdateDungeonSearchItems();
 				if( DungeonList.Items.Count > 0 ) DungeonList.SelectedIndex = 0;
+
+				StartingFame.Focus();
 			}
 		}
 
@@ -101,6 +103,8 @@ namespace RealmCharFameTracker
 			{
 				UpdateCharSearchItems();
 				if( CharacterList.Items.Count > 0 ) CharacterList.SelectedIndex = 0;
+
+				MaxAmount.Focus();
 			}
 		}
 
@@ -141,11 +145,18 @@ namespace RealmCharFameTracker
 			UpdateStartEnabled();
 		}
 
+		private void MaxAmount_KeyDown( object sender,KeyEventArgs e )
+		{
+			if( e.Key == Key.Return ) DungeonSearch.Focus();
+		}
+
 		private void StartingFame_KeyDown( object sender,KeyEventArgs e )
 		{
 			if( e.Key == Key.Return )
 			{
 				Start();
+
+				EndFame.Focus();
 			}
 		}
 
@@ -168,7 +179,22 @@ namespace RealmCharFameTracker
 			UpdateFinishEnabled();
 		}
 
+		private void EndFame_KeyDown( object sender,KeyEventArgs e )
+		{
+			if( e.Key == Key.Return )
+			{
+				Finish();
+				
+				DungeonSearch.Focus();
+			}
+		}
+
 		private void EndButton_Click( object sender,RoutedEventArgs e )
+		{
+			Finish();
+		}
+
+		void Finish()
 		{
 			var totalTime = ( float )( DateTime.Now - startTime ).TotalMinutes;
 			var totalFame = int.Parse( EndFame.Text ) - int.Parse( StartingFame.Text );

@@ -55,7 +55,7 @@
 					<ListBoxItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="End Fame "></TextBlock>
-							<TextBox x:Name="EndFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="EndFame_TextChanged"></TextBox>
+							<TextBox x:Name="EndFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="EndFame_TextChanged" KeyDown="EndFame_KeyDown"></TextBox>
 						</StackPanel>
 					</ListBoxItem>
 					<ListBoxItem>
@@ -81,7 +81,7 @@
 					<ListBoxItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Maxing "></TextBlock>
-							<TextBox x:Name="MaxAmount" Width="25" MaxLength="1" PreviewTextInput="MaxAmount_PreviewTextInput" TextChanged="CheckStartTextChanged"></TextBox>
+							<TextBox x:Name="MaxAmount" Width="25" MaxLength="1" PreviewTextInput="MaxAmount_PreviewTextInput" TextChanged="CheckStartTextChanged" KeyDown="MaxAmount_KeyDown"></TextBox>
 							<TextBlock Text=" / 8"></TextBlock>
 						</StackPanel>
 					</ListBoxItem>
