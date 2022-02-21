@@ -36,6 +36,8 @@ namespace RealmCharFameTracker
 			UpdateDungeonStatsSearchItems();
 
 			UpdateBestFPMList();
+
+			ResetCheckBoxesAndSuch();
 		}
 
 		private void DungeonSearch_TextChanged( object sender,TextChangedEventArgs e )
@@ -138,6 +140,8 @@ namespace RealmCharFameTracker
 		private void CheckStartSelectionChanged( object sender,SelectionChangedEventArgs e )
 		{
 			UpdateStartEnabled();
+
+			ResetSecondExists();
 		}
 
 		private void CheckStartTextChanged( object sender,TextChangedEventArgs e )
@@ -222,7 +226,10 @@ namespace RealmCharFameTracker
 			}
 
 			var selectedDungeon = dungeons[dungeonUsed];
-			selectedDungeon.AddSaveItem( totalTime,totalFame,charUsed,maxAmount );
+			selectedDungeon.AddSaveItem( totalTime,totalFame,charUsed,maxAmount,
+				SoloCheck.IsChecked ?? false,RushCheck.IsChecked ?? false,
+				CompletedCheck.IsChecked ?? false,SecondCheck.IsChecked ?? false,
+				MinionXPBox.SelectedIndex,BossXPBox.SelectedIndex );
 
 			DungeonSearch.Text = "";
 			DungeonList.SelectedIndex = -1;
@@ -335,6 +342,42 @@ namespace RealmCharFameTracker
 			}
 		}
 
+		void ResetCheckBoxesAndSuch()
+		{
+			SoloCheck.IsChecked = true;
+			RushCheck.IsChecked = false;
+			CompletedCheck.IsChecked = true;
+			MinionXPBox.SelectedIndex = 0;
+			BossXPBox.SelectedIndex = 0;
+			
+			ResetSecondExists();
+		}
+
+		void ResetSecondExists()
+		{
+			if( DungeonList.SelectedIndex < 0 )
+			{
+				SecondCheck.IsChecked = false;
+				return;
+			}
+			
+			int dungeonUsed = -1;
+			var selectedDungeonName = ( DungeonList.SelectedItem as ComboBoxItem ).Content.ToString();
+			for( int i = 0; i < dungeons.Length; ++i )
+			{
+				if( dungeons[i].GetName() == selectedDungeonName )
+				{
+					dungeonUsed = i;
+					break;
+				}
+			}
+			
+			var selectedDungeon = dungeons[dungeonUsed];
+			
+			SecondCheck.IsChecked = selectedDungeon.HasSecond();
+			SecondCheck.IsEnabled = selectedDungeon.HasSecond();
+		}
+
 		Regex intRegex = new Regex( "[^0-9]+" );
 		Regex maxRegex = new Regex( "[^0-8]+" );
 
@@ -343,66 +386,66 @@ namespace RealmCharFameTracker
 
 		static readonly Dungeon[] dungeons =
 		{
-			new Dungeon( "Pirate Cave","pcave" ),
-			new Dungeon( "Forest Maze" ),
-			new Dungeon( "Spider Den" ),
-			new Dungeon( "Forbidden Jungle" ),
-			new Dungeon( "The Hive" ),
-			new Dungeon( "Candyland Hunting Grounds","cland" ),
-			new Dungeon( "Ancient Ruins" ),
-			new Dungeon( "Magic Woods","mwoods" ),
-			new Dungeon( "Snake Pit" ),
-			new Dungeon( "Sprite World" ),
-			new Dungeon( "Cave of a Thousand Treasures","tcave" ),
-			new Dungeon( "Undead Lair","udl" ),
-			new Dungeon( "Manor of the Immortals" ),
-			new Dungeon( "Puppet Master's Theatre" ),
-			new Dungeon( "Toxic Sewers" ),
-			new Dungeon( "Cursed Library" ),
-			new Dungeon( "Mad Lab" ),
-			new Dungeon( "Abyss of Demons","abby" ),
-			new Dungeon( "Haunted Cemetary" ),
-			new Dungeon( "The Machine" ),
-			new Dungeon( "The Inner Workings" ),
-			new Dungeon( "The Crawling Depths","cdepths" ),
-			new Dungeon( "Parasite Chambers" ),
-			new Dungeon( "Woodland Labyrinth","wlab" ),
-			new Dungeon( "Deadwater Docks","ddocks" ),
-			new Dungeon( "Beachzone" ),
-			new Dungeon( "Davy Jones' Locker","davys" ),
-			new Dungeon( "Ice Cave" ),
-			new Dungeon( "Mountain Temple" ),
-			new Dungeon( "Lair of Draconis","lod" ),
-			new Dungeon( "Ocean Trench","ot" ),
-			new Dungeon( "Tomb of the Ancients" ),
-			new Dungeon( "The Third Dimension" ),
-			new Dungeon( "Fungal Cavern" ),
-			new Dungeon( "Crystal Cavern" ),
-			new Dungeon( "The Nest" ),
-			new Dungeon( "Lost Halls","lh" ),
-			new Dungeon( "Cultist Hideout" ),
-			new Dungeon( "The Void" ),
-			new Dungeon( "The Shatters","shats" ),
-			new Dungeon( "Malogia" ),
-			new Dungeon( "Forax" ),
-			new Dungeon( "Untaris" ),
-			new Dungeon( "Katalund" ),
-			new Dungeon( "Oryx's Chamber" ),
-			new Dungeon( "Wine Cellar","o2" ),
-			new Dungeon( "Oryx's Sanctuary" ),
-			new Dungeon( "Puppet Master's Encore" ),
-			new Dungeon( "Lair of Shaitan" ),
-			new Dungeon( "Cnidarian Reef" ),
-			new Dungeon( "Secluded Thicket" ),
-			new Dungeon( "High Tech Terror" ),
-			new Dungeon( "Heroic Undead Lair" ),
-			new Dungeon( "Heroic Abyss of Demons" ),
-			new Dungeon( "Rainbow Road" ),
-			new Dungeon( "Santa's Workshop" ),
-			new Dungeon( "Ice Tomb" ),
-			new Dungeon( "Battle for the Nexus" ),
-			new Dungeon( "Belladonna's Garden" ),
-			new Dungeon( "Mad God Mayhem" )
+			new Dungeon( "Pirate Cave",false,"pcave" ),
+			new Dungeon( "Forest Maze",false ),
+			new Dungeon( "Spider Den",false ),
+			new Dungeon( "Forbidden Jungle",false ),
+			new Dungeon( "The Hive",false ),
+			new Dungeon( "Candyland Hunting Grounds",false,"cland" ),
+			new Dungeon( "Ancient Ruins",false ),
+			new Dungeon( "Magic Woods",false,"mwoods" ),
+			new Dungeon( "Snake Pit",false ),
+			new Dungeon( "Sprite World",false ),
+			new Dungeon( "Cave of a Thousand Treasures",false,"tcave" ),
+			new Dungeon( "Undead Lair",false,"udl" ),
+			new Dungeon( "Manor of the Immortals",false ),
+			new Dungeon( "Puppet Master's Theatre",false ),
+			new Dungeon( "Toxic Sewers",false ),
+			new Dungeon( "Cursed Library",true ),
+			new Dungeon( "Mad Lab",true ),
+			new Dungeon( "Abyss of Demons",false,"abby" ),
+			new Dungeon( "Haunted Cemetary",false ),
+			new Dungeon( "The Machine",false ),
+			new Dungeon( "The Inner Workings",false ),
+			new Dungeon( "The Crawling Depths",false,"cdepths" ),
+			new Dungeon( "Parasite Chambers",false ),
+			new Dungeon( "Woodland Labyrinth",false,"wlab" ),
+			new Dungeon( "Deadwater Docks",false,"ddocks" ),
+			new Dungeon( "Beachzone",false ),
+			new Dungeon( "Davy Jones' Locker",false,"davys" ),
+			new Dungeon( "Ice Cave",false ),
+			new Dungeon( "Mountain Temple",true ),
+			new Dungeon( "Lair of Draconis",false,"lod" ),
+			new Dungeon( "Ocean Trench",false,"ot" ),
+			new Dungeon( "Tomb of the Ancients",false ),
+			new Dungeon( "The Third Dimension",false ),
+			new Dungeon( "Fungal Cavern",false ),
+			new Dungeon( "Crystal Cavern",false ),
+			new Dungeon( "The Nest",false ),
+			new Dungeon( "Lost Halls",false,"lh" ),
+			new Dungeon( "Cultist Hideout",false ),
+			new Dungeon( "The Void",false ),
+			new Dungeon( "The Shatters",false,"shats" ),
+			new Dungeon( "Malogia",false ),
+			new Dungeon( "Forax",false ),
+			new Dungeon( "Untaris",false ),
+			new Dungeon( "Katalund",false ),
+			new Dungeon( "Oryx's Chamber",false ),
+			new Dungeon( "Wine Cellar",false,"o2" ),
+			new Dungeon( "Oryx's Sanctuary",false ),
+			new Dungeon( "Puppet Master's Encore",false ),
+			new Dungeon( "Lair of Shaitan",false ),
+			new Dungeon( "Cnidarian Reef",false ),
+			new Dungeon( "Secluded Thicket",false ),
+			new Dungeon( "High Tech Terror",false ),
+			new Dungeon( "Heroic Undead Lair",false ),
+			new Dungeon( "Heroic Abyss of Demons",false ),
+			new Dungeon( "Rainbow Road",false ),
+			new Dungeon( "Santa's Workshop",false ),
+			new Dungeon( "Ice Tomb",false ),
+			new Dungeon( "Battle for the Nexus",false ),
+			new Dungeon( "Belladonna's Garden",false ),
+			new Dungeon( "Mad God Mayhem",false )
 		};
 
 		static readonly Character[] chars =
