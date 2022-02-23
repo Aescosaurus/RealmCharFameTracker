@@ -135,6 +135,8 @@ namespace RealmCharFameTracker
 
 			DungeonSearch.Text = "";
 			StartingFame.Text = "";
+			DungeonList.SelectedIndex = -1;
+			EndFame.Text = "";
 
 			UpdateStartEnabled();
 		}
@@ -156,7 +158,7 @@ namespace RealmCharFameTracker
 
 		private void StartingFame_KeyDown( object sender,KeyEventArgs e )
 		{
-			if( e.Key == Key.Return )
+			if( e.Key == Key.Return && StartButton.IsEnabled )
 			{
 				Start();
 
@@ -185,7 +187,7 @@ namespace RealmCharFameTracker
 
 		private void EndFame_KeyDown( object sender,KeyEventArgs e )
 		{
-			if( e.Key == Key.Return )
+			if( e.Key == Key.Return && EndButton.IsEnabled )
 			{
 				Finish();
 				
