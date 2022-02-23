@@ -116,6 +116,12 @@
 				<TextBlock Text="Best f/m" HorizontalAlignment="Center"></TextBlock>
 				<ListBox x:Name="BestFPMList" Grid.Row="1"></ListBox>
 			</Grid>
+			
+			<Grid Grid.Row="1" Grid.Column="1" Background="white">
+			</Grid>
+			
+			<Grid Grid.Row="1" Grid.Column="2" Background="white">
+			</Grid>
 		</Grid>
 	</Grid>
 </Window>

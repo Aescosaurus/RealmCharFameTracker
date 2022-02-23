@@ -134,6 +134,42 @@ namespace RealmCharFameTracker
 			return ( total / saveItems.Count );
 		}
 
+		public int GetTimesCompleted()
+		{
+			return( saveItems.Count );
+		}
+
+		public int GetHighestFame()
+		{
+			int highest = -1;
+			foreach( var item in saveItems )
+			{
+				if( item.fameEarned > highest ) highest = item.fameEarned;
+			}
+			return( highest );
+		}
+
+		public float GetQuickestRun()
+		{
+			float quickest = float.MaxValue;
+			foreach( var item in saveItems )
+			{
+				if( item.duration < quickest ) quickest = item.duration;
+			}
+			return( quickest );
+		}
+
+		public float GetBestFPM()
+		{
+			float best = -1.0f;
+			foreach( var item in saveItems )
+			{
+				var curFPM = item.fameEarned / item.duration;
+				if( curFPM > best ) best = curFPM;
+			}
+			return( best );
+		}
+
 		List<SaveItem> saveItems = new List<SaveItem>();
 
 		static readonly string saveFolder = "Dungeons/";

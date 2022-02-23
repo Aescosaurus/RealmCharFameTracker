@@ -303,6 +303,10 @@ namespace RealmCharFameTracker
 				AddStat( "Avg Time: " + selectedDungeon.CalcAvgTime().ToString( "0.00" ) + 'm' );
 				AddStat( "Avg Fame: " + selectedDungeon.CalcAvgFame().ToString( "0.00" ) );
 				AddStat( "Avg f/m: " + selectedDungeon.CalcAvgFpm().ToString( "0.00" ) );
+				AddStat( "Times Completed: " + selectedDungeon.GetTimesCompleted().ToString() );
+				AddStat( "Highest Fame: " + selectedDungeon.GetHighestFame().ToString() );
+				AddStat( "Quickest Run: " + selectedDungeon.GetQuickestRun().ToString() );
+				AddStat( "Best FPM: " + selectedDungeon.GetBestFPM().ToString() );
 			}
 			else AddStat( "No data" );
 		}
