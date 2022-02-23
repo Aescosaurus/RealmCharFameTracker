@@ -132,6 +132,10 @@ namespace RealmCharFameTracker
 		{
 			started = false;
 			RunningText.Text = "";
+
+			DungeonSearch.Text = "";
+			StartingFame.Text = "";
+
 			UpdateStartEnabled();
 		}
 
