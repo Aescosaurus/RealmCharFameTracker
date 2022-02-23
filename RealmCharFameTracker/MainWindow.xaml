@@ -61,44 +61,6 @@
 					<ListBoxItem>
 						<Button x:Name="EndButton" Content="Finish" Click="EndButton_Click"></Button>
 					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<CheckBox x:Name="SoloCheck" Height="16"></CheckBox>
-							<TextBlock Text="Solo?"></TextBlock>
-							<CheckBox x:Name="RushCheck" Height="16"></CheckBox>
-							<TextBlock Text="Rush?"></TextBlock>
-							<CheckBox x:Name="CompletedCheck" Height="16"></CheckBox>
-							<TextBlock Text="Finished?"></TextBlock>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Minion XP%"></TextBlock>
-							<ComboBox x:Name="MinionXPBox">
-								<ComboBoxItem Content="None"></ComboBoxItem>
-								<ComboBoxItem Content="I"></ComboBoxItem>
-								<ComboBoxItem Content="II"></ComboBoxItem>
-								<ComboBoxItem Content="III"></ComboBoxItem>
-							</ComboBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Boss XP%"></TextBlock>
-							<ComboBox x:Name="BossXPBox">
-								<ComboBoxItem Content="None"></ComboBoxItem>
-								<ComboBoxItem Content="I"></ComboBoxItem>
-								<ComboBoxItem Content="II"></ComboBoxItem>
-								<ComboBoxItem Content="III"></ComboBoxItem>
-							</ComboBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<CheckBox x:Name="SecondCheck" Height="16"></CheckBox>
-							<TextBlock Text="2nd?"></TextBlock>
-						</StackPanel>
-					</ListBoxItem>
 				</ListBox>
 			</Grid>
 			
