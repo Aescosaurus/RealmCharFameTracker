@@ -129,14 +129,14 @@ namespace RealmCharFameTracker
 			return ( total / saveItems.Count );
 		}
 
-		public float CalcAvgFpm()
+		public float CalcAvgFPM()
 		{
 			float total = 0.0f;
 			foreach( var item in saveItems )
 			{
 				total += item.CalcFPM();
 			}
-			return ( total / saveItems.Count );
+			return( total / saveItems.Count );
 		}
 
 		public int GetTimesCompleted()
@@ -178,6 +178,70 @@ namespace RealmCharFameTracker
 		public List<SaveItem> GetAllItemsList()
 		{
 			return( saveItems );
+		}
+
+		public int CountDungeonsCompletedByChar( int character )
+		{
+			int total = 0;
+			foreach( var item in saveItems )
+			{
+				if( item.charUsed == character ) ++total;
+			}
+			return( total );
+		}
+
+		public float CalcAvgFPMByChar( int character )
+		{
+			float total = 0.0f;
+			int byChar = 0;
+			foreach( var item in saveItems )
+			{
+				if( item.charUsed == character )
+				{
+					total += item.CalcFPM();
+					++byChar;
+				}
+			}
+			return( total / byChar );
+		}
+
+		public float CalcAvgFameByChar( int character )
+		{
+			float total = 0.0f;
+			int byChar = 0;
+			foreach( var item in saveItems )
+			{
+				if( item.charUsed == character )
+				{
+					total += item.fameEarned;
+					++byChar;
+				}
+			}
+			return( total / byChar );
+		}
+
+		public float CalcAvgTimeByChar( int character )
+		{
+			float total = 0.0f;
+			int byChar = 0;
+			foreach( var item in saveItems )
+			{
+				if( item.charUsed == character )
+				{
+					total += item.duration;
+					++byChar;
+				}
+			}
+			return( total / byChar );
+		}
+
+		public bool HasStatsForChar( int character )
+		{
+			foreach( var item in saveItems )
+			{
+				if( item.charUsed == character ) return( true );
+			}
+			return( false );
 		}
 
 		List<SaveItem> saveItems = new List<SaveItem>();
