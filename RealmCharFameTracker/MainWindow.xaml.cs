@@ -35,7 +35,8 @@ namespace RealmCharFameTracker
 
 			UpdateDungeonStatsSearchItems();
 
-			UpdateBestFPMList();
+			// UpdateBestFPMList();
+			UpdateSortList();
 		}
 
 		private void DungeonSearch_TextChanged( object sender,TextChangedEventArgs e )
@@ -138,6 +139,8 @@ namespace RealmCharFameTracker
 			DungeonList.SelectedIndex = -1;
 			EndFame.Text = "";
 
+			DungeonSearch.Focus();
+
 			UpdateStartEnabled();
 		}
 
@@ -190,7 +193,7 @@ namespace RealmCharFameTracker
 			if( e.Key == Key.Return && EndButton.IsEnabled )
 			{
 				Finish();
-				
+
 				DungeonSearch.Focus();
 			}
 		}
@@ -239,7 +242,8 @@ namespace RealmCharFameTracker
 			UpdateStartEnabled();
 
 			UpdateDungeonStatsCombo();
-			UpdateBestFPMList();
+			// UpdateBestFPMList();
+			UpdateSortList();
 		}
 
 		private void StatsSearch_TextChanged( object sender,TextChangedEventArgs e )
@@ -318,31 +322,82 @@ namespace RealmCharFameTracker
 			DungeonStatsList.Items.Add( newItem );
 		}
 
-		void UpdateBestFPMList()
+		// void UpdateBestFPMList()
+		// {
+		// 	var sortedDungeons = new List<Dungeon>();
+		// 	foreach( var dungeon in dungeons ) sortedDungeons.Add( dungeon );
+		// 
+		// 	sortedDungeons.Sort( delegate( Dungeon a,Dungeon b )
+		// 	{
+		// 		return( b.CalcAvgFpm().CompareTo( a.CalcAvgFpm() ) );
+		// 	} );
+		// 
+		// 
+		// 	BestFPMList.Items.Clear();
+		// 
+		// 	foreach( var dungeon in sortedDungeons )
+		// 	{
+		// 		if( dungeon.HasStats() )
+		// 		{
+		// 			var comboBoxItem = new ComboBoxItem();
+		// 			comboBoxItem.Content = dungeon.GetName() + ": " + dungeon.CalcAvgFpm().ToString( "0.00" ) +
+		// 				"(" + dungeon.CalcAvgFame().ToString( "0.00" ) + " / " +
+		// 				dungeon.CalcAvgTime().ToString( "0.00" ) + ")";
+		// 
+		// 			BestFPMList.Items.Add( comboBoxItem );
+		// 		}
+		// 	}
+		// }
+
+		private void SortOptionCombo_SelectionChanged( object sender,SelectionChangedEventArgs e )
+		{
+			if( SortList != null ) UpdateSortList();
+		}
+
+		void UpdateSortList()
 		{
 			var sortedDungeons = new List<Dungeon>();
-			foreach( var dungeon in dungeons ) sortedDungeons.Add( dungeon );
-
-			sortedDungeons.Sort( delegate( Dungeon a,Dungeon b )
+			foreach( var dungeon in dungeons )
 			{
-				return( b.CalcAvgFpm().CompareTo( a.CalcAvgFpm() ) );
+				if( dungeon.HasStats() ) sortedDungeons.Add( dungeon );
+			}
+
+			sortedDungeons.Sort( delegate ( Dungeon a,Dungeon b )
+			{
+				return( sortLambs[SortOptionCombo.SelectedIndex]( a,b ) );
 			} );
 
+			SortList.Items.Clear();
 
-			BestFPMList.Items.Clear();
-
-			foreach( var dungeon in sortedDungeons )
+			for( int i = 0; i < sortedDungeons.Count; ++i )
 			{
-				if( dungeon.HasStats() )
-				{
-					var comboBoxItem = new ComboBoxItem();
-					comboBoxItem.Content = dungeon.GetName() + ": " + dungeon.CalcAvgFpm().ToString( "0.00" ) +
-						"(" + dungeon.CalcAvgFame().ToString( "0.00" ) + " / " +
-						dungeon.CalcAvgTime().ToString( "0.00" ) + ")";
+				var listBoxItem = new ListBoxItem();
+				listBoxItem.Content = sortedListLambs[SortOptionCombo.SelectedIndex]( sortedDungeons[i] );
+				listBoxItem.Tag = DungeonName2Index( sortedDungeons[i].GetName() ).ToString();
 
-					BestFPMList.Items.Add( comboBoxItem );
-				}
+				SortList.Items.Add( listBoxItem );
 			}
+		}
+
+		private void SortList_SelectionChanged( object sender,SelectionChangedEventArgs e )
+		{
+			if( SortList.SelectedIndex > -1 )
+			{
+				// StatsSearch.Text = ( SortOptionCombo.SelectedValue as ComboBoxItem ).Content.ToString();
+				StatsSearch.Text = "";
+				UpdateDungeonStatsSearchItems();
+
+				DungeonStatsCombo.SelectedIndex = int.Parse( ( SortList.SelectedValue as ListBoxItem ).Tag.ToString() );
+			}
+		}
+
+		int DungeonName2Index( string dungeonName )
+		{
+			for( int i = 0; i < dungeons.Length; ++i )
+			{
+				if( dungeons[i].GetName() == dungeonName ) return( i );
+			}
+			return( -1 );
 		}
 
 		Regex intRegex = new Regex( "[^0-9]+" );
@@ -350,6 +405,23 @@ namespace RealmCharFameTracker
 
 		DateTime startTime = DateTime.Now;
 		bool started = false;
+
+		Func<Dungeon,Dungeon,int>[] sortLambs =
+		{
+			( Dungeon a,Dungeon b ) => b.CalcAvgFpm().CompareTo( a.CalcAvgFpm() ),
+			( Dungeon a,Dungeon b ) => b.CalcAvgFame().CompareTo( a.CalcAvgFame() ),
+			( Dungeon a,Dungeon b ) => a.CalcAvgTime().CompareTo( b.CalcAvgTime() ),
+		};
+
+		Func<Dungeon,string>[] sortedListLambs =
+		{
+			( Dungeon d ) => ( d.GetName() + ": " + d.CalcAvgFpm().ToString( "0.00" ) + "( " +
+				d.CalcAvgFame().ToString( "0.00" ) + " / " + d.CalcAvgTime().ToString( "0.00" ) + " )" ),
+			( Dungeon d ) => ( d.GetName() + ": " + d.CalcAvgFame().ToString( "0.00" ) + " (" +
+				d.CalcAvgFpm().ToString( "0.00" ) + "fpm)" ),
+			( Dungeon d ) => ( d.GetName() + ": " + d.CalcAvgTime().ToString( "0.00" ) + " (" +
+				d.CalcAvgFpm().ToString( "0.00" ) + "fpm)" )
+		};
 
 		static readonly Dungeon[] dungeons =
 		{

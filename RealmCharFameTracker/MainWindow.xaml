@@ -111,16 +111,16 @@
 			<Grid Grid.Row="1" Grid.Column="0" Background="white">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="1*"></RowDefinition>
-					<RowDefinition Height="7*"></RowDefinition>
+					<RowDefinition Height="6*"></RowDefinition>
 				</Grid.RowDefinitions>
-				<TextBlock Text="Best f/m" HorizontalAlignment="Center"></TextBlock>
-				<ListBox x:Name="BestFPMList" Grid.Row="1"></ListBox>
-			</Grid>
-			
-			<Grid Grid.Row="1" Grid.Column="1" Background="white">
-			</Grid>
-			
-			<Grid Grid.Row="1" Grid.Column="2" Background="white">
+				<!--<TextBlock Text="Sort Options"></TextBlock>-->
+				<ComboBox Grid.Row="0" x:Name="SortOptionCombo" SelectedIndex="0" SelectionChanged="SortOptionCombo_SelectionChanged">
+					<ComboBoxItem Content="Best f/m"></ComboBoxItem>
+					<ComboBoxItem Content="Most fame"></ComboBoxItem>
+					<ComboBoxItem Content="Quickest time"></ComboBoxItem>
+				</ComboBox>
+				<ListBox x:Name="SortList" Grid.Row="1" SelectionChanged="SortList_SelectionChanged">
+				</ListBox>
 			</Grid>
 		</Grid>
 	</Grid>
