@@ -11,7 +11,7 @@ namespace RealmCharFameTracker
 		:
 		NamedItem
 	{
-		class SaveItem
+		public class SaveItem
 		{
 			public SaveItem( float dur,int fame,int charUsed,int charMax )
 			{
@@ -19,6 +19,11 @@ namespace RealmCharFameTracker
 				fameEarned = fame;
 				this.charUsed = charUsed;
 				this.charMax = charMax;
+			}
+
+			public float CalcFPM()
+			{
+				return( fameEarned / duration );
 			}
 
 			public float duration;
@@ -129,7 +134,7 @@ namespace RealmCharFameTracker
 			float total = 0.0f;
 			foreach( var item in saveItems )
 			{
-				total += item.fameEarned / item.duration;
+				total += item.CalcFPM();
 			}
 			return ( total / saveItems.Count );
 		}
@@ -164,10 +169,15 @@ namespace RealmCharFameTracker
 			float best = -1.0f;
 			foreach( var item in saveItems )
 			{
-				var curFPM = item.fameEarned / item.duration;
+				var curFPM = item.CalcFPM();
 				if( curFPM > best ) best = curFPM;
 			}
 			return( best );
+		}
+
+		public List<SaveItem> GetAllItemsList()
+		{
+			return( saveItems );
 		}
 
 		List<SaveItem> saveItems = new List<SaveItem>();

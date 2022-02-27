@@ -90,8 +90,25 @@
 
 			<Grid Grid.Row="0" Grid.Column="2" Background="white">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="3*"></RowDefinition>
-					<RowDefinition Height="6*"></RowDefinition>
+					<RowDefinition Height="32"></RowDefinition>
+					<RowDefinition Height="32"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
+				</Grid.RowDefinitions>
+				<TextBlock Grid.Row="0" Text="All Dungeons"></TextBlock>
+				<ComboBox Grid.Row="1" x:Name="SortOptionCombo" SelectedIndex="0" SelectionChanged="SortOptionCombo_SelectionChanged">
+					<ComboBoxItem Content="Best f/m"></ComboBoxItem>
+					<ComboBoxItem Content="Most fame"></ComboBoxItem>
+					<ComboBoxItem Content="Quickest time"></ComboBoxItem>
+					<ComboBoxItem Content="Times Completed"></ComboBoxItem>
+				</ComboBox>
+				<ListBox x:Name="SortList" Grid.Row="2" SelectionChanged="SortList_SelectionChanged">
+				</ListBox>
+			</Grid>
+
+			<Grid Grid.Row="1" Grid.Column="0" Background="white">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="72"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
 				</Grid.RowDefinitions>
 				<StackPanel Grid.Row="0">
 					<TextBlock Text="Dungeon Stats" HorizontalAlignment="Center"></TextBlock>
@@ -107,19 +124,22 @@
 				<ListBox Grid.Row="1" x:Name="DungeonStatsList">
 				</ListBox>
 			</Grid>
-
-			<Grid Grid.Row="1" Grid.Column="0" Background="white">
+			
+			<Grid Grid.Row="1" Grid.Column="1" Background="white">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="1*"></RowDefinition>
-					<RowDefinition Height="6*"></RowDefinition>
+					<RowDefinition Height="32"></RowDefinition>
+					<RowDefinition Height="32"></RowDefinition>
+					<RowDefinition Height="32"></RowDefinition>
+					<RowDefinition Height="*"></RowDefinition>
 				</Grid.RowDefinitions>
-				<!--<TextBlock Text="Sort Options"></TextBlock>-->
-				<ComboBox Grid.Row="0" x:Name="SortOptionCombo" SelectedIndex="0" SelectionChanged="SortOptionCombo_SelectionChanged">
+				<TextBlock Grid.Row="0" Text="Run Entries"></TextBlock>
+				<ComboBox Grid.Row="1" x:Name="SpecificDungeonList" SelectionChanged="SpecificDungeon_SelectionChanged"></ComboBox>
+				<ComboBox Grid.Row="2" x:Name="SpecificSortCombo" SelectedIndex="0" SelectionChanged="SpecificDungeon_SelectionChanged">
 					<ComboBoxItem Content="Best f/m"></ComboBoxItem>
 					<ComboBoxItem Content="Most fame"></ComboBoxItem>
 					<ComboBoxItem Content="Quickest time"></ComboBoxItem>
 				</ComboBox>
-				<ListBox x:Name="SortList" Grid.Row="1" SelectionChanged="SortList_SelectionChanged">
+				<ListBox x:Name="SpecificSortList" Grid.Row="3" SelectionChanged="SortList_SelectionChanged">
 				</ListBox>
 			</Grid>
 		</Grid>
