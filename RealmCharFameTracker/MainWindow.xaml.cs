@@ -27,6 +27,8 @@ namespace RealmCharFameTracker
 		{
 			InitializeComponent();
 
+			UpdateFilteredDungeons();
+
 			UpdateDungeonCombo( DungeonList,null );
 			UpdateCharacterCombo( CharacterList,null );
 
@@ -51,7 +53,7 @@ namespace RealmCharFameTracker
 		{
 			target.Items.Clear();
 
-			foreach( var dungeon in dungeons )
+			foreach( var dungeon in filteredDungeons )
 			{
 				if( search == null || dungeon.NameMatch( search.Text ) )
 				{
@@ -215,16 +217,16 @@ namespace RealmCharFameTracker
 
 			int dungeonUsed = -1;
 			var selectedDungeonName = ( DungeonList.SelectedItem as ComboBoxItem ).Content.ToString();
-			for( int i = 0; i < dungeons.Length; ++i )
+			for( int i = 0; i < filteredDungeons.Count; ++i )
 			{
-				if( dungeons[i].GetName() == selectedDungeonName )
+				if( filteredDungeons[i].GetName() == selectedDungeonName )
 				{
 					dungeonUsed = i;
 					break;
 				}
 			}
 
-			var selectedDungeon = dungeons[dungeonUsed];
+			var selectedDungeon = filteredDungeons[dungeonUsed];
 			selectedDungeon.AddSaveItem( totalTime,totalFame,charUsed,maxAmount );
 
 			DungeonSearch.Text = "";
@@ -235,7 +237,7 @@ namespace RealmCharFameTracker
 			RunningText.Text = "";
 			UpdateStartEnabled();
 
-			UpdateDungeonStatsCombo();
+			UpdateDungeonStatsList();
 			// UpdateBestFPMList();
 			UpdateSortList();
 		}
@@ -259,29 +261,29 @@ namespace RealmCharFameTracker
 		{
 			if( DungeonStatsCombo.SelectedItem == null ) return;
 
-			UpdateDungeonStatsCombo();
+			UpdateDungeonStatsList();
 
 			SpecificDungeonList.SelectedIndex = DungeonName2Index( ( DungeonStatsCombo.SelectedItem as ComboBoxItem ).Content.ToString() );
 		}
 
-		void UpdateDungeonStatsCombo()
+		void UpdateDungeonStatsList()
 		{
 			DungeonStatsList.Items.Clear();
 
 			if( DungeonStatsCombo.SelectedItem == null ) return;
 
-			var selectedDungeon = dungeons[DungeonName2Index( ( DungeonStatsCombo.SelectedItem as ComboBoxItem ).Content.ToString() )];
+			var selectedDungeon = filteredDungeons[DungeonName2Index( ( DungeonStatsCombo.SelectedItem as ComboBoxItem ).Content.ToString() )];
 			selectedDungeon.ReloadSaveItems();
 
 			if( selectedDungeon.HasStats() )
 			{
-				AddStat( "Avg Time: " + selectedDungeon.CalcAvgTime().ToString( "0.00" ) + 'm' );
-				AddStat( "Avg Fame: " + selectedDungeon.CalcAvgFame().ToString( "0.00" ) );
-				AddStat( "Avg f/m: " + selectedDungeon.CalcAvgFPM().ToString( "0.00" ) );
-				AddStat( "Times Completed: " + selectedDungeon.GetTimesCompleted().ToString() );
-				AddStat( "Highest Fame: " + selectedDungeon.GetHighestFame().ToString() );
-				AddStat( "Quickest Run: " + selectedDungeon.GetQuickestRun().ToString( "0.00" ) );
-				AddStat( "Best FPM: " + selectedDungeon.GetBestFPM().ToString( "0.00" ) );
+				AddStat( "Avg Time: " + selectedDungeon.CalcAvgTime( curChar ).ToString( "0.00" ) + 'm' );
+				AddStat( "Avg Fame: " + selectedDungeon.CalcAvgFame( curChar ).ToString( "0.00" ) );
+				AddStat( "Avg f/m: " + selectedDungeon.CalcAvgFPM( curChar ).ToString( "0.00" ) );
+				AddStat( "Times Completed: " + selectedDungeon.CountDungeonsCompletedByChar( curChar ).ToString() );
+				AddStat( "Highest Fame: " + selectedDungeon.GetHighestFame( curChar ).ToString() );
+				AddStat( "Quickest Run: " + selectedDungeon.GetQuickestRun( curChar ).ToString( "0.00" ) + 'm' );
+				AddStat( "Best FPM: " + selectedDungeon.GetBestFPM( curChar ).ToString( "0.00" ) );
 			}
 			else AddStat( "No data" );
 		}
@@ -301,14 +303,14 @@ namespace RealmCharFameTracker
 		void UpdateSortList()
 		{
 			var sortedDungeons = new List<Dungeon>();
-			foreach( var dungeon in dungeons )
+			foreach( var dungeon in filteredDungeons )
 			{
 				if( dungeon.HasStats() ) sortedDungeons.Add( dungeon );
 			}
 
 			sortedDungeons.Sort( delegate( Dungeon a,Dungeon b )
 			{
-				return( sortLambs[SortOptionCombo.SelectedIndex]( a,b ) );
+				return( sortLambs[SortOptionCombo.SelectedIndex]( a,b,curChar ) );
 			} );
 
 			SortList.Items.Clear();
@@ -316,7 +318,7 @@ namespace RealmCharFameTracker
 			for( int i = 0; i < sortedDungeons.Count; ++i )
 			{
 				var listBoxItem = new ListBoxItem();
-				listBoxItem.Content = sortedListLambs[SortOptionCombo.SelectedIndex]( sortedDungeons[i] );
+				listBoxItem.Content = sortedListLambs[SortOptionCombo.SelectedIndex]( sortedDungeons[i],curChar );
 				listBoxItem.Tag = DungeonName2Index( sortedDungeons[i].GetName() ).ToString();
 
 				SortList.Items.Add( listBoxItem );
@@ -341,9 +343,9 @@ namespace RealmCharFameTracker
 
 		int DungeonName2Index( string dungeonName )
 		{
-			for( int i = 0; i < dungeons.Length; ++i )
+			for( int i = 0; i < filteredDungeons.Count; ++i )
 			{
-				if( dungeons[i].GetName() == dungeonName ) return( i );
+				if( filteredDungeons[i].GetName() == dungeonName ) return( i );
 			}
 			return( -1 );
 		}
@@ -359,20 +361,24 @@ namespace RealmCharFameTracker
 
 		private void SpecificDungeon_SelectionChanged( object sender,SelectionChangedEventArgs e )
 		{
-			if( SpecificSortList != null && SpecificDungeonList.SelectedIndex > -1 ) UpdateSpecificSortList();
+			UpdateSpecificSortList();
 		}
 
 		void UpdateSpecificSortList()
 		{
+			if( SpecificSortList == null ) return;
+
+			SpecificSortList.Items.Clear();
+
+			if( SpecificDungeonList.SelectedIndex < 0 ) return;
+
 			var sortedEntries = new List<Dungeon.SaveItem>();
-			sortedEntries.AddRange( dungeons[SpecificDungeonList.SelectedIndex].GetAllItemsList() );
+			sortedEntries.AddRange( filteredDungeons[SpecificDungeonList.SelectedIndex].GetCharSpecificStats( curChar ) );
 
 			sortedEntries.Sort( delegate( Dungeon.SaveItem a,Dungeon.SaveItem b )
 			{
 				return( specificSortLambs[SpecificSortCombo.SelectedIndex]( a,b ) );
 			} );
-
-			SpecificSortList.Items.Clear();
 
 			for( int i = 0; i < sortedEntries.Count; ++i )
 			{
@@ -401,6 +407,19 @@ namespace RealmCharFameTracker
 		private void CharStatsCombo_SelectionChanged( object sender,SelectionChangedEventArgs e )
 		{
 			UpdateCharStatsList();
+
+			UpdateCurChar();
+
+			if( filterDungeons ) UpdateDungeonBoxesByFilter();
+		}
+
+		void UpdateCurChar()
+		{
+			curChar = -1;
+			if( filterDungeons && CharStatsCombo.SelectedIndex > -1 )
+			{
+				curChar = CharName2Index( ( CharStatsCombo.SelectedValue as ComboBoxItem ).Content.ToString() );
+			}
 		}
 
 		void UpdateCharStatsList()
@@ -419,41 +438,56 @@ namespace RealmCharFameTracker
 		int CountTotalDungeonsCompletedByChar( int character )
 		{
 			int total = 0;
-			foreach( var dungeon in dungeons )
+			foreach( var dungeon in filteredDungeons )
 			{
 				total += dungeon.CountDungeonsCompletedByChar( character );
 			}
-			return( total / dungeons.Length );
+			return( total );
 		}
 
 		float CalcAvgFPMByChar( int character )
 		{
 			float total = 0.0f;
-			foreach( var dungeon in dungeons )
+			int byChar = 0;
+			foreach( var dungeon in filteredDungeons )
 			{
-				if( dungeon.HasStatsForChar( character ) ) total += dungeon.CalcAvgFPMByChar( character );
+				if( dungeon.HasStatsForChar( character ) )
+				{
+					total += dungeon.CalcAvgFPM( character );
+					++byChar;
+				}
 			}
-			return( total / dungeons.Length );
+			return( total / byChar );
 		}
 
 		float CalcAvgFameByChar( int character )
 		{
 			float total = 0.0f;
-			foreach( var dungeon in dungeons )
+			int byChar = 0;
+			foreach( var dungeon in filteredDungeons )
 			{
-				if( dungeon.HasStatsForChar( character ) ) total += dungeon.CalcAvgFameByChar( character );
+				if( dungeon.HasStatsForChar( character ) )
+				{
+					total += dungeon.CalcAvgFame( character );
+					++byChar;
+				}
 			}
-			return( total / dungeons.Length );
+			return( total / byChar );
 		}
 
 		float CalcAvgTimeByChar( int character )
 		{
 			float total = 0.0f;
-			foreach( var dungeon in dungeons )
+			int byChar = 0;
+			foreach( var dungeon in filteredDungeons )
 			{
-				if( dungeon.HasStatsForChar( character ) ) total += dungeon.CalcAvgTimeByChar( character );
+				if( dungeon.HasStatsForChar( character ) )
+				{
+					total += dungeon.CalcAvgTime( character );
+					++byChar;
+				}
 			}
-			return( total / dungeons.Length );
+			return( total / byChar );
 		}
 
 		void AddCharStatsListItem( string text )
@@ -468,7 +502,44 @@ namespace RealmCharFameTracker
 		{
 			filterDungeons = FilterDungeonCheck.IsChecked ?? false;
 
-			// TODO: update dungeon lists
+			UpdateCurChar();
+
+			UpdateDungeonBoxesByFilter();
+		}
+
+		void UpdateDungeonBoxesByFilter()
+		{
+			UpdateFilteredDungeons();
+
+			DungeonStatsCombo.SelectedIndex = -1;
+			SpecificDungeonList.SelectedIndex = -1;
+			UpdateDungeonCombo( DungeonStatsCombo,StatsSearch );
+			UpdateDungeonCombo( SpecificDungeonList,null );
+			// UpdateCharacterCombo( CharStatsCombo,CharStatsSearch );
+			// if( CharStatsCombo.Items.Count > 0 ) CharStatsCombo.SelectedIndex = 0;
+
+			UpdateSortList();
+			UpdateDungeonStatsList();
+			UpdateSpecificSortList();
+		}
+
+		void UpdateFilteredDungeons()
+		{
+			filteredDungeons.Clear();
+
+			int selectedChar = -1;
+			if( CharStatsCombo.SelectedItem != null )
+			{
+				selectedChar = CharName2Index( ( CharStatsCombo.SelectedValue as ComboBoxItem ).Content.ToString() );
+			}
+
+			foreach( var dungeon in dungeons )
+			{
+				if( !filterDungeons || selectedChar < 0 || dungeon.HasStatsForChar( selectedChar ) )
+				{
+					filteredDungeons.Add( dungeon );
+				}
+			}
 		}
 
 		Regex intRegex = new Regex( "[^0-9]+" );
@@ -478,13 +549,15 @@ namespace RealmCharFameTracker
 		bool started = false;
 
 		bool filterDungeons = false;
+		List<Dungeon> filteredDungeons = new List<Dungeon>();
+		int curChar = -1;
 
-		Func<Dungeon,Dungeon,int>[] sortLambs =
+		Func<Dungeon,Dungeon,int,int>[] sortLambs =
 		{
-			( Dungeon a,Dungeon b ) => b.CalcAvgFPM().CompareTo( a.CalcAvgFPM() ),
-			( Dungeon a,Dungeon b ) => b.CalcAvgFame().CompareTo( a.CalcAvgFame() ),
-			( Dungeon a,Dungeon b ) => a.CalcAvgTime().CompareTo( b.CalcAvgTime() ),
-			( Dungeon a,Dungeon b ) => b.GetTimesCompleted().CompareTo( a.GetTimesCompleted() ),
+			( Dungeon a,Dungeon b,int curChar ) => b.CalcAvgFPM( curChar ).CompareTo( a.CalcAvgFPM( curChar ) ),
+			( Dungeon a,Dungeon b,int curChar ) => b.CalcAvgFame( curChar ).CompareTo( a.CalcAvgFame( curChar ) ),
+			( Dungeon a,Dungeon b,int curChar ) => a.CalcAvgTime( curChar ).CompareTo( b.CalcAvgTime( curChar ) ),
+			( Dungeon a,Dungeon b,int curChar ) => b.CountDungeonsCompletedByChar( curChar ).CompareTo( a.CountDungeonsCompletedByChar( curChar ) ),
 		};
 
 		Func<Dungeon.SaveItem,Dungeon.SaveItem,int>[] specificSortLambs =
@@ -494,16 +567,16 @@ namespace RealmCharFameTracker
 			( Dungeon.SaveItem a,Dungeon.SaveItem b ) => a.duration.CompareTo( b.duration ),
 		};
 
-		Func<Dungeon,string>[] sortedListLambs =
+		Func<Dungeon,int,string>[] sortedListLambs =
 		{
-			( Dungeon d ) => ( d.GetName() + ": " + d.CalcAvgFPM().ToString( "0.00" ) + " (" +
-				d.CalcAvgFame().ToString( "0.00" ) + " / " + d.CalcAvgTime().ToString( "0.00" ) + ")" ),
-			( Dungeon d ) => ( d.GetName() + ": " + d.CalcAvgFame().ToString( "0.00" ) + " (" +
-				d.CalcAvgFPM().ToString( "0.00" ) + "fpm)" ),
-			( Dungeon d ) => ( d.GetName() + ": " + d.CalcAvgTime().ToString( "0.00" ) + " (" +
-				d.CalcAvgFPM().ToString( "0.00" ) + "fpm)" ),
-			( Dungeon d ) => ( d.GetName() + ": " + d.GetTimesCompleted().ToString() + " (" +
-				d.CalcAvgFPM().ToString( "0.00" ) + "fpm)" )
+			( Dungeon d,int curChar ) => ( d.GetName() + ": " + d.CalcAvgFPM( curChar ).ToString( "0.00" ) + " (" +
+				d.CalcAvgFame( curChar ).ToString( "0.00" ) + " / " + d.CalcAvgTime( curChar ).ToString( "0.00" ) + ")" ),
+			( Dungeon d,int curChar ) => ( d.GetName() + ": " + d.CalcAvgFame( curChar ).ToString( "0.00" ) + " (" +
+				d.CalcAvgFPM( curChar ).ToString( "0.00" ) + "fpm)" ),
+			( Dungeon d,int curChar ) => ( d.GetName() + ": " + d.CalcAvgTime( curChar ).ToString( "0.00" ) + " (" +
+				d.CalcAvgFPM( curChar ).ToString( "0.00" ) + "fpm)" ),
+			( Dungeon d,int curChar ) => ( d.GetName() + ": " + d.CountDungeonsCompletedByChar( curChar ).ToString() + " (" +
+				d.CalcAvgFPM( curChar ).ToString( "0.00" ) + "fpm)" )
 		};
 
 		Func<Dungeon.SaveItem,string>[] specificSortedListLambs =

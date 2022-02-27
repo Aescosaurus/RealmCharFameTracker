@@ -109,94 +109,43 @@ namespace RealmCharFameTracker
 			return( saveItems.Count > 0 );
 		}
 
-		public float CalcAvgTime()
-		{
-			float total = 0.0f;
-			foreach( var item in saveItems )
-			{
-				total += item.duration;
-			}
-			return( total / saveItems.Count );
-		}
-
-		public float CalcAvgFame()
-		{
-			float total = 0.0f;
-			foreach( var item in saveItems )
-			{
-				total += item.fameEarned;
-			}
-			return ( total / saveItems.Count );
-		}
-
-		public float CalcAvgFPM()
-		{
-			float total = 0.0f;
-			foreach( var item in saveItems )
-			{
-				total += item.CalcFPM();
-			}
-			return( total / saveItems.Count );
-		}
-
-		public int GetTimesCompleted()
-		{
-			return( saveItems.Count );
-		}
-
-		public int GetHighestFame()
-		{
-			int highest = -1;
-			foreach( var item in saveItems )
-			{
-				if( item.fameEarned > highest ) highest = item.fameEarned;
-			}
-			return( highest );
-		}
-
-		public float GetQuickestRun()
-		{
-			float quickest = float.MaxValue;
-			foreach( var item in saveItems )
-			{
-				if( item.duration < quickest ) quickest = item.duration;
-			}
-			return( quickest );
-		}
-
-		public float GetBestFPM()
-		{
-			float best = -1.0f;
-			foreach( var item in saveItems )
-			{
-				var curFPM = item.CalcFPM();
-				if( curFPM > best ) best = curFPM;
-			}
-			return( best );
-		}
-
-		public List<SaveItem> GetAllItemsList()
-		{
-			return( saveItems );
-		}
-
-		public int CountDungeonsCompletedByChar( int character )
-		{
-			int total = 0;
-			foreach( var item in saveItems )
-			{
-				if( item.charUsed == character ) ++total;
-			}
-			return( total );
-		}
-
-		public float CalcAvgFPMByChar( int character )
+		public float CalcAvgTime( int charUsed = -1 )
 		{
 			float total = 0.0f;
 			int byChar = 0;
 			foreach( var item in saveItems )
 			{
-				if( item.charUsed == character )
+				if( charUsed < 0 || item.charUsed == charUsed )
+				{
+					total += item.duration;
+					++byChar;
+				}
+			}
+			return( total / byChar );
+		}
+
+		public float CalcAvgFame( int charUsed = -1 )
+		{
+			float total = 0.0f;
+			int byChar = 0;
+			foreach( var item in saveItems )
+			{
+				if( charUsed < 0 || item.charUsed == charUsed )
+				{
+					total += item.fameEarned;
+					++byChar;
+				}
+			}
+			return ( total / byChar );
+		}
+
+		public float CalcAvgFPM( int charUsed = -1 )
+		{
+			float total = 0.0f;
+			int byChar = 0;
+			foreach( var item in saveItems )
+			{
+				if( charUsed < 0 || item.charUsed == charUsed )
 				{
 					total += item.CalcFPM();
 					++byChar;
@@ -205,34 +154,64 @@ namespace RealmCharFameTracker
 			return( total / byChar );
 		}
 
-		public float CalcAvgFameByChar( int character )
+		// public int GetTimesCompleted()
+		// {
+		// 	return( saveItems.Count );
+		// }
+
+		public int GetHighestFame( int charUsed = -1 )
 		{
-			float total = 0.0f;
-			int byChar = 0;
+			int highest = -1;
 			foreach( var item in saveItems )
 			{
-				if( item.charUsed == character )
+				if( charUsed < 0 || item.charUsed == charUsed )
 				{
-					total += item.fameEarned;
-					++byChar;
+					if( item.fameEarned > highest ) highest = item.fameEarned;
 				}
 			}
-			return( total / byChar );
+			return( highest );
 		}
 
-		public float CalcAvgTimeByChar( int character )
+		public float GetQuickestRun( int charUsed = -1)
 		{
-			float total = 0.0f;
-			int byChar = 0;
+			float quickest = float.MaxValue;
 			foreach( var item in saveItems )
 			{
-				if( item.charUsed == character )
+				if( charUsed < 0 || item.charUsed == charUsed )
 				{
-					total += item.duration;
-					++byChar;
+					if( item.duration < quickest ) quickest = item.duration;
 				}
 			}
-			return( total / byChar );
+			return( quickest );
+		}
+
+		public float GetBestFPM( int charUsed = -1 )
+		{
+			float best = -1.0f;
+			foreach( var item in saveItems )
+			{
+				if( charUsed < 0 || item.charUsed == charUsed )
+				{
+					var curFPM = item.CalcFPM();
+					if( curFPM > best ) best = curFPM;
+				}
+			}
+			return( best );
+		}
+
+		// public List<SaveItem> GetAllItemsList()
+		// {
+		// 	return( saveItems );
+		// }
+
+		public int CountDungeonsCompletedByChar( int character = -1 )
+		{
+			int total = 0;
+			foreach( var item in saveItems )
+			{
+				if( character < 0 || item.charUsed == character ) ++total;
+			}
+			return( total );
 		}
 
 		public bool HasStatsForChar( int character )
@@ -242,6 +221,34 @@ namespace RealmCharFameTracker
 				if( item.charUsed == character ) return( true );
 			}
 			return( false );
+		}
+
+		public List<SaveItem> GetCharSpecificStats( int character )
+		{
+			var specificStats = new List<SaveItem>();
+
+			foreach( var item in saveItems )
+			{
+				if( character < 0 || item.charUsed == character ) specificStats.Add( item );
+			}
+
+			return( specificStats );
+		}
+
+		private Dungeon()
+			:
+			base( "" )
+		{}
+
+		public Dungeon GetCharSpecificDungeon( int character )
+		{
+			var newDungeon = new Dungeon();
+			newDungeon.name = name;
+			newDungeon.aliases = aliases;
+
+			newDungeon.saveItems = GetCharSpecificStats( character );
+
+			return( newDungeon );
 		}
 
 		List<SaveItem> saveItems = new List<SaveItem>();

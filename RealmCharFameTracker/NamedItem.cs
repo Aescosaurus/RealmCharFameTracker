@@ -37,7 +37,7 @@ namespace RealmCharFameTracker
 			return ( false );
 		}
 
-		string name;
-		List<string> aliases = new List<string>();
+		protected string name;
+		protected List<string> aliases = new List<string>();
 	}
 }
