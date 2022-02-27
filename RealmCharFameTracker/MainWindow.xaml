@@ -25,67 +25,58 @@
 				<ColumnDefinition Width="*"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 
-			<Grid Grid.Row="0" Grid.Column="0">
-				<ListBox>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Search "></TextBlock>
-							<TextBox x:Name="DungeonSearch" Width="100" TextChanged="DungeonSearch_TextChanged" KeyDown="DungeonSearch_KeyDown"></TextBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Dungeon "></TextBlock>
-							<ComboBox x:Name="DungeonList" SelectionChanged="CheckStartSelectionChanged"></ComboBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Starting Fame "></TextBlock>
-							<TextBox x:Name="StartingFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="CheckStartTextChanged" KeyDown="StartingFame_KeyDown"></TextBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<Button x:Name="StartButton" Content="Start" Margin="0,0,5,0" Click="StartButton_Click"></Button>
-							<Button x:Name="CancelButton" Content="Cancel" Margin="0,0,5,0" Click="CancelButton_Click"></Button>
-							<TextBlock x:Name="RunningText" Text=""></TextBlock>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="End Fame "></TextBlock>
-							<TextBox x:Name="EndFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="EndFame_TextChanged" KeyDown="EndFame_KeyDown"></TextBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<Button x:Name="EndButton" Content="Finish" Click="EndButton_Click"></Button>
-					</ListBoxItem>
-				</ListBox>
+			<Grid Grid.Row="0" Grid.Column="0" Background="white">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+				</Grid.RowDefinitions>
+				<StackPanel Grid.Row="0" Orientation="Horizontal">
+					<TextBlock Text="Search "></TextBlock>
+					<TextBox x:Name="DungeonSearch" Width="100" TextChanged="DungeonSearch_TextChanged" KeyDown="DungeonSearch_KeyDown"></TextBox>
+				</StackPanel>
+				<StackPanel Grid.Row="1" Orientation="Horizontal">
+					<TextBlock Text="Dungeon "></TextBlock>
+					<ComboBox x:Name="DungeonList" SelectionChanged="CheckStartSelectionChanged"></ComboBox>
+				</StackPanel>
+				<StackPanel Grid.Row="2" Orientation="Horizontal">
+					<TextBlock Text="Starting Fame "></TextBlock>
+					<TextBox x:Name="StartingFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="CheckStartTextChanged" KeyDown="StartingFame_KeyDown"></TextBox>
+				</StackPanel>
+				<StackPanel Grid.Row="3" Orientation="Horizontal">
+					<Button x:Name="StartButton" Content="Start" Margin="0,0,5,0" Click="StartButton_Click"></Button>
+					<Button x:Name="CancelButton" Content="Cancel" Margin="0,0,5,0" Click="CancelButton_Click"></Button>
+					<TextBlock x:Name="RunningText" Text=""></TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Row="4" Orientation="Horizontal">
+					<TextBlock Text="End Fame "></TextBlock>
+					<TextBox x:Name="EndFame" Width="100" PreviewTextInput="Fame_PreviewTextInput" TextChanged="EndFame_TextChanged" KeyDown="EndFame_KeyDown"></TextBox>
+				</StackPanel>
+				<Button Grid.Row="5" x:Name="EndButton" Content="Finish" Click="EndButton_Click"></Button>
 			</Grid>
 			
-			<Grid Grid.Row="0" Grid.Column="1">
-				<ListBox>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Search "></TextBlock>
-							<TextBox x:Name="CharacterSearch" Width="100" TextChanged="CharacterSearch_TextChanged" KeyDown="CharacterSearch_KeyDown"></TextBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Character "></TextBlock>
-							<ComboBox x:Name="CharacterList" SelectionChanged="CheckStartSelectionChanged"></ComboBox>
-						</StackPanel>
-					</ListBoxItem>
-					<ListBoxItem>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="Maxing "></TextBlock>
-							<TextBox x:Name="MaxAmount" Width="25" MaxLength="1" PreviewTextInput="MaxAmount_PreviewTextInput" TextChanged="CheckStartTextChanged" KeyDown="MaxAmount_KeyDown"></TextBox>
-							<TextBlock Text=" / 8"></TextBlock>
-						</StackPanel>
-					</ListBoxItem>
-				</ListBox>
+			<Grid Grid.Row="0" Grid.Column="1" Background="white">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+					<RowDefinition Height="24"></RowDefinition>
+				</Grid.RowDefinitions>
+				<StackPanel Grid.Row="0" Orientation="Horizontal">
+					<TextBlock Text="Search "></TextBlock>
+					<TextBox x:Name="CharacterSearch" Width="100" TextChanged="CharacterSearch_TextChanged" KeyDown="CharacterSearch_KeyDown"></TextBox>
+				</StackPanel>
+				<StackPanel Grid.Row="1" Orientation="Horizontal">
+					<TextBlock Text="Character "></TextBlock>
+					<ComboBox x:Name="CharacterList" SelectionChanged="CheckStartSelectionChanged"></ComboBox>
+				</StackPanel>
+				<StackPanel Grid.Row="2" Orientation="Horizontal">
+					<TextBlock Text="Maxing "></TextBlock>
+					<TextBox x:Name="MaxAmount" Width="25" MaxLength="1" PreviewTextInput="MaxAmount_PreviewTextInput" TextChanged="CheckStartTextChanged" KeyDown="MaxAmount_KeyDown"></TextBox>
+					<TextBlock Text=" / 8"></TextBlock>
+				</StackPanel>
 			</Grid>
 
 			<Grid Grid.Row="0" Grid.Column="2" Background="white">
